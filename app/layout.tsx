@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
     title: "Sutra AI",
-    description: "Your intelligent AI assistant powered by Sutra",
+    description: "A thread connecting ideas",
 };
 
 export default function RootLayout({
