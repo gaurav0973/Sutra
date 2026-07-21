@@ -1,18 +1,48 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ChatLayout } from "@/components/chat/chat-layout";
 import { Message } from "@/components/chat/message-bubble";
 import { Sidebar } from "@/components/chat/sidebar";
 
-interface ChatClientProps {
+interface Conversation {
+    id: string;
+    title: string;
     userId: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
-export default function ChatClient({ userId }: ChatClientProps) {
+interface ChatClientProps {
+    userId: string;
+    initialConversations?: Conversation[];
+    activeConversationId?: string | null;
+    initialMessages?: Message[];
+}
+
+export default function ChatClient({
+    userId,
+    initialConversations = [],
+    activeConversationId = null,
+    initialMessages = [],
+}: ChatClientProps) {
+    const router = useRouter();
     const [input, setInput] = useState("");
     const [isStreaming, setIsStreaming] = useState(false);
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Message[]>(initialMessages);
+    const [conversations, setConversations] = useState<Conversation[]>(initialConversations);
+    const [activeConvId, setActiveConvId] = useState<string | null>(activeConversationId);
+
+    // Sync state with props upon navigation/rerendering
+    useEffect(() => {
+        setConversations(initialConversations);
+    }, [initialConversations]);
+
+    useEffect(() => {
+        setActiveConvId(activeConversationId);
+        setMessages(initialMessages);
+    }, [activeConversationId, initialMessages]);
 
     const sendMessage = useCallback(async () => {
         if (!input.trim() || isStreaming) return;
@@ -41,6 +71,7 @@ export default function ChatClient({ userId }: ChatClientProps) {
                 },
                 body: JSON.stringify({
                     message: currentInput,
+                    conversationId: activeConvId,
                 }),
             });
 
@@ -71,8 +102,25 @@ export default function ChatClient({ userId }: ChatClientProps) {
                         const parsed = JSON.parse(line);
 
                         if (parsed.done) {
-                            // Stream complete
                             break;
+                        }
+
+                        // Sync dynamic conversation ID creation
+                        if (parsed.conversationId) {
+                            const newId = parsed.conversationId;
+                            setActiveConvId(newId);
+                            // Update browser URL silently
+                            window.history.pushState(null, "", `/chat/${userId}?c=${newId}`);
+
+                            // Update local conversation list
+                            const newConv: Conversation = {
+                                id: newId,
+                                title: currentInput.trim().substring(0, 30) || "New Chat",
+                                userId,
+                                createdAt: new Date().toISOString(),
+                                updatedAt: new Date().toISOString(),
+                            };
+                            setConversations((prev) => [newConv, ...prev]);
                         }
 
                         if (parsed.token) {
@@ -123,12 +171,35 @@ export default function ChatClient({ userId }: ChatClientProps) {
         } finally {
             setIsStreaming(false);
         }
-    }, [input, isStreaming]);
+    }, [input, isStreaming, activeConvId, userId]);
+
+    const handleDeleteConversation = useCallback(async (id: string) => {
+        try {
+            const res = await fetch(`/api/conversations/${id}`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                setConversations((prev) => prev.filter((c) => c.id !== id));
+                if (activeConvId === id) {
+                    router.push(`/chat/${userId}`);
+                }
+            } else {
+                console.error("Failed to delete conversation");
+            }
+        } catch (error) {
+            console.error("Delete error:", error);
+        }
+    }, [activeConvId, userId, router]);
 
     return (
         <div className="flex h-screen w-screen overflow-hidden">
             {/* Sidebar */}
-            <Sidebar />
+            <Sidebar
+                conversations={conversations}
+                activeConversationId={activeConvId}
+                onDeleteConversation={handleDeleteConversation}
+                userId={userId}
+            />
 
             {/* Main Chat Area */}
             <div className="flex-1 min-w-0">
