@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { ClerkProvider } from '@clerk/nextjs'
 
 const inter = Inter({
     subsets: ["latin"],
@@ -33,7 +34,9 @@ export default function RootLayout({
             )}
         >
             <body className="min-h-full font-sans">
+                <ClerkProvider>
                 {children}
+                </ClerkProvider>
             </body>
         </html>
     );

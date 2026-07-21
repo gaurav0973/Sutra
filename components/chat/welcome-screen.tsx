@@ -1,6 +1,7 @@
 "use client";
 
 import { ChatInput } from "./chat-input";
+import { useUser } from "@clerk/nextjs";
 
 interface WelcomeScreenProps {
     inputValue: string;
@@ -23,6 +24,8 @@ export function WelcomeScreen({
     isStreaming,
 }: WelcomeScreenProps) {
     const greeting = getGreeting();
+    const { user } = useUser();
+    const displayName = user?.firstName || "Gaurav";
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
@@ -30,7 +33,7 @@ export function WelcomeScreen({
             <div className="mb-8">
                 <h1 className="text-3xl md:text-4xl font-serif font-light tracking-tight text-[#e8e4df]">
                     <span className="greeting-accent mr-2">✺</span>
-                    {greeting}, Gaurav
+                    {greeting}, {displayName}
                 </h1>
             </div>
 

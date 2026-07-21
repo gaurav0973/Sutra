@@ -10,6 +10,7 @@ import {
     BookOpen,
     MessageCircle,
 } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 
 export function Sidebar() {
     return (
@@ -58,8 +59,14 @@ export function Sidebar() {
                 </button>
 
                 {/* User avatar */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#c4956a] to-[#8b6b4a] flex items-center justify-center text-xs font-semibold text-white mt-1">
-                    G
+                <div className="w-8 h-8 flex items-center justify-center mt-1">
+                    <UserButton
+                        appearance={{
+                            elements: {
+                                avatarBox: "w-8 h-8 rounded-full border border-white/[0.08]"
+                            }
+                        }}
+                    />
                 </div>
             </div>
         </aside>
