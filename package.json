@@ -8,7 +8,8 @@
         "start": "next start",
         "lint": "eslint",
         "db:migrate": "pnpx prisma migrate dev",
-        "db:generate": "pnpx prisma generate dev"
+        "db:generate": "pnpx prisma generate dev",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
         "@base-ui/react": "^1.6.0",
