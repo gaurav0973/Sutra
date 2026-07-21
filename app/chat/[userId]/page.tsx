@@ -37,7 +37,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
         updatedAt: c.updatedAt.toISOString(),
     }));
 
-    let initialMessages = [];
+    let initialMessages: { role: "user" | "assistant"; content: string }[] = [];
     let activeConversationId = conversationId || null;
 
     if (activeConversationId) {

@@ -4,9 +4,16 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, UserButton } from "@clerk/nextjs";
-import { ArrowRight, Globe, GitFork, FolderOpen } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, GitFork, Globe, FolderOpen, Compass } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 
 export default function HomePage() {
     const { userId, isSignedIn, isLoaded } = useAuth();
@@ -18,43 +25,46 @@ export default function HomePage() {
         }
     }, [isLoaded, isSignedIn, userId, router]);
 
-    // Prevent rendering of landing page while auth is loading or if user is authenticated
+    // Loading / redirecting state
     if (!isLoaded || (isSignedIn && userId)) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#1a1a1a] text-[#e8e4df]">
+            <div className="flex min-h-screen items-center justify-center bg-background">
                 <div className="flex flex-col items-center gap-4">
-                    <span className="greeting-accent text-3xl animate-pulse">✺</span>
-                    <span className="font-serif font-light tracking-widest text-sm animate-pulse">SUTRA</span>
+                    <div className="compass-rose" />
+                    <span className="font-light tracking-[0.25em] text-xs text-muted-foreground animate-pulse">
+                        SUTRA
+                    </span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="relative flex min-h-screen flex-col justify-between bg-gradient-to-b from-[#1a1a1a] via-[#1c1a18] to-[#121212] text-[#e8e4df] overflow-hidden">
-            {/* Background glowing effects */}
-            <div className="absolute top-[-20%] left-[50%] -translate-x-[50%] h-[600px] w-[800px] rounded-full bg-[#c4956a]/[0.03] blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] h-[400px] w-[500px] rounded-full bg-[#c4956a]/[0.02] blur-[100px] pointer-events-none" />
+        <div className="landing-hero relative flex min-h-screen flex-col text-foreground">
+            {/* Decorative rope lines */}
+            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+                <div className="rope-line-deco" style={{ top: "15%", left: "3%", width: "30%", transform: "rotate(-1.5deg)" }} />
+                <div className="rope-line-deco" style={{ top: "35%", right: "5%", width: "25%", transform: "rotate(1deg)", animationDelay: "2s" }} />
+                <div className="rope-line-deco" style={{ top: "60%", left: "8%", width: "20%", transform: "rotate(-0.5deg)", animationDelay: "4s" }} />
+                <div className="rope-line-deco" style={{ top: "82%", right: "10%", width: "22%", transform: "rotate(1.5deg)", animationDelay: "6s" }} />
+            </div>
 
-            {/* Header / Navbar */}
-            <header className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[#1a1a1a]/80 backdrop-blur-md">
+            {/* Header — Wood plank nav */}
+            <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-6xl h-16 items-center justify-between px-6">
-                    <div className="flex items-center gap-2">
-                        <span className="greeting-accent text-lg">✺</span>
-                        <span className="font-serif font-light text-xl tracking-wider text-[#e8e4df]">
-                            SUTRA
+                    <div className="flex items-center gap-3">
+                        <div className="compass-rose" style={{ width: "32px", height: "32px" }} />
+                        <span className="font-semibold text-lg tracking-wide text-foreground">
+                            Sutra
                         </span>
                     </div>
 
-                    <nav className="flex items-center gap-4">
+                    <nav className="flex items-center gap-3">
                         {isSignedIn ? (
                             <>
                                 <Link
                                     href={`/chat/${userId}`}
-                                    className={cn(
-                                        buttonVariants({ variant: "outline", size: "sm" }),
-                                        "border-white/[0.08] hover:border-white/10 dark:border-white/[0.08] dark:bg-white/[0.02]"
-                                    )}
+                                    className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-border")}
                                 >
                                     Go to Chat
                                 </Link>
@@ -62,7 +72,7 @@ export default function HomePage() {
                                     <UserButton
                                         appearance={{
                                             elements: {
-                                                avatarBox: "w-8 h-8 rounded-full border border-white/[0.08]"
+                                                avatarBox: "w-8 h-8 rounded-full border border-border"
                                             }
                                         }}
                                     />
@@ -71,108 +81,164 @@ export default function HomePage() {
                         ) : (
                             <Link
                                 href="/sign-in"
-                                className={cn(
-                                    buttonVariants({ variant: "outline", size: "sm" }),
-                                    "border-white/[0.08] hover:border-white/10 dark:border-white/[0.08] dark:bg-white/[0.02]"
-                                )}
+                                className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-border")}
                             >
                                 Sign In
                             </Link>
                         )}
                     </nav>
                 </div>
+                {/* Wood plank header bottom */}
+                <div className="wood-plank-divider" />
             </header>
 
-            {/* Main Hero Content */}
-            <main className="flex-1 flex flex-col justify-center items-center px-6 py-20 z-10">
+            {/* Hero Section */}
+            <main className="flex-1 flex flex-col justify-center items-center px-6 py-24 z-10">
                 <div className="max-w-3xl text-center flex flex-col items-center">
-                    {/* Animated Tagline */}
-                    <div className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-[#c4956a]/20 bg-[#c4956a]/5 px-3 py-1 text-xs text-[#c4956a] backdrop-blur-sm">
-                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#c4956a] animate-pulse" />
+                    {/* Tagline pill */}
+                    <div className="tagline-pill mb-6">
+                        <span className="pulse-dot" />
                         A thread connecting ideas
                     </div>
 
+                    {/* Compass logo */}
+                    <div className="sutra-logo-mark mb-6">
+                        <span className="text-5xl" style={{ color: "var(--rope-tan)" }}>✦</span>
+                        <div className="sutra-logo-orbit" />
+                    </div>
+
                     {/* Main Title */}
-                    <h1 className="mt-4 text-5xl md:text-7xl font-serif font-light tracking-tight text-white leading-tight">
-                        Weave Conversations with{" "}
-                        <span className="block mt-2 bg-gradient-to-r from-[#c4956a] via-[#e8e4df] to-[#c4956a] bg-clip-text text-transparent font-normal">
-                            Sutra AI
-                        </span>
+                    <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight text-foreground leading-[1.1]">
+                        Sutra AI
                     </h1>
 
                     {/* Description */}
-                    <p className="mt-6 text-base md:text-lg text-[#9a9590] max-w-xl font-light leading-relaxed">
-                        Step into a non-linear chat space. Explore branching paths, recall contexts contextually, and build a connected library of your intelligence.
+                    <p className="mt-6 text-base md:text-lg text-muted-foreground max-w-xl font-light leading-relaxed">
+                        Step into a non-linear chat space. Explore branching paths,
+                        recall contexts, and build a connected library of your intelligence.
                     </p>
 
-                    {/* CTA Button */}
-                    <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    {/* Rope divider */}
+                    <div className="rope-divider w-32 mx-auto mt-8" />
+
+                    {/* CTA Buttons */}
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
                         {isSignedIn ? (
-                            <Link
-                                href={`/chat/${userId}`}
-                                className={cn(
-                                    buttonVariants({ variant: "default", size: "lg" }),
-                                    "h-11 px-8 rounded-none bg-[#c4956a] hover:bg-[#b0855e] text-white flex items-center gap-2 group transition-all"
-                                )}
-                            >
+                            <Link href={`/chat/${userId}`} className="cta-button group">
                                 Enter Workspace
                                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         ) : (
-                            <Link
-                                href="/sign-in"
-                                className={cn(
-                                    buttonVariants({ variant: "default", size: "lg" }),
-                                    "h-11 px-8 rounded-none bg-[#c4956a] hover:bg-[#b0855e] text-white flex items-center gap-2 group transition-all"
-                                )}
-                            >
+                            <Link href="/sign-in" className="cta-button group">
                                 Get Started
                                 <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                             </Link>
                         )}
+
+                        <a href="#features" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "cta-secondary")}>
+                            <Compass className="size-4" />
+                            Explore Features
+                        </a>
                     </div>
                 </div>
 
                 {/* Features Section */}
-                <div className="mt-32 max-w-5xl w-full grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Feature 1 */}
-                    <div className="flex flex-col p-6 rounded-none border border-white/[0.06] bg-white/[0.01] backdrop-blur-sm transition-all hover:border-[#c4956a]/30 hover:bg-white/[0.02] group">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-none bg-[#c4956a]/10 border border-[#c4956a]/20 text-[#c4956a] mb-4 group-hover:bg-[#c4956a]/20 transition-all">
-                            <GitFork className="size-5" />
-                        </div>
-                        <h3 className="font-serif font-light text-lg text-white mb-2">Branching Conversations</h3>
-                        <p className="text-sm text-[#9a9590] leading-relaxed font-light">
-                            Fork prompts and explore different lines of reasoning. Never lose track of your creative branches.
-                        </p>
+                <div id="features" className="mt-32 max-w-5xl w-full">
+                    {/* Section header */}
+                    <div className="flex items-center gap-3 mb-8 justify-center">
+                        <div className="rope-divider flex-1 max-w-16" />
+                        <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground font-semibold">
+                            Features
+                        </span>
+                        <div className="rope-divider flex-1 max-w-16" />
                     </div>
 
-                    {/* Feature 2 */}
-                    <div className="flex flex-col p-6 rounded-none border border-white/[0.06] bg-white/[0.01] backdrop-blur-sm transition-all hover:border-[#c4956a]/30 hover:bg-white/[0.02] group">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-none bg-[#c4956a]/10 border border-[#c4956a]/20 text-[#c4956a] mb-4 group-hover:bg-[#c4956a]/20 transition-all">
-                            <Globe className="size-5" />
-                        </div>
-                        <h3 className="font-serif font-light text-lg text-white mb-2">Semantic Research</h3>
-                        <p className="text-sm text-[#9a9590] leading-relaxed font-light">
-                            Enriched search queries querying live web intelligence to ground AI responses with real-world accuracy.
-                        </p>
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Feature 1 */}
+                        <Card className="feature-card border-border">
+                            <CardHeader className="p-0 mb-3">
+                                <div className="feature-icon">
+                                    <GitFork className="size-5" />
+                                </div>
+                                <CardTitle className="text-base text-foreground">
+                                    Branching Conversations
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <CardDescription className="text-sm text-muted-foreground leading-relaxed">
+                                    Fork prompts and explore different lines of reasoning. Never lose track of your creative branches.
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
 
-                    {/* Feature 3 */}
-                    <div className="flex flex-col p-6 rounded-none border border-white/[0.06] bg-white/[0.01] backdrop-blur-sm transition-all hover:border-[#c4956a]/30 hover:bg-white/[0.02] group">
-                        <div className="h-10 w-10 flex items-center justify-center rounded-none bg-[#c4956a]/10 border border-[#c4956a]/20 text-[#c4956a] mb-4 group-hover:bg-[#c4956a]/20 transition-all">
-                            <FolderOpen className="size-5" />
-                        </div>
-                        <h3 className="font-serif font-light text-lg text-white mb-2">Organized Workspace</h3>
-                        <p className="text-sm text-[#9a9590] leading-relaxed font-light">
-                            Store your conversations inside workspaces, search historical threads, and mark critical knowledge with stars.
-                        </p>
+                        {/* Feature 2 */}
+                        <Card className="feature-card border-border">
+                            <CardHeader className="p-0 mb-3">
+                                <div className="feature-icon">
+                                    <Globe className="size-5" />
+                                </div>
+                                <CardTitle className="text-base text-foreground">
+                                    Semantic Research
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <CardDescription className="text-sm text-muted-foreground leading-relaxed">
+                                    Enriched search queries grounding AI responses with real-world accuracy from live web intelligence.
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
+
+                        {/* Feature 3 */}
+                        <Card className="feature-card border-border">
+                            <CardHeader className="p-0 mb-3">
+                                <div className="feature-icon">
+                                    <FolderOpen className="size-5" />
+                                </div>
+                                <CardTitle className="text-base text-foreground">
+                                    Organized Workspace
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0">
+                                <CardDescription className="text-sm text-muted-foreground leading-relaxed">
+                                    Store conversations in workspaces, search threads historically, and bookmark critical knowledge.
+                                </CardDescription>
+                            </CardContent>
+                        </Card>
                     </div>
+                </div>
+
+                {/* Why Sutra — Bridge Section */}
+                <div className="mt-24 max-w-2xl w-full">
+                    <Card className="bridge-section border-border text-center">
+                        <CardHeader className="p-0 mb-4 flex items-center justify-center">
+                            <div className="flex items-center gap-2">
+                                <Compass className="size-4" style={{ color: "var(--caramel)" }} />
+                                <span className="text-xs uppercase tracking-[0.15em] font-semibold" style={{ color: "var(--caramel)" }}>
+                                    Why Sutra
+                                </span>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-light">
+                                In Sanskrit, <em className="text-foreground font-medium not-italic">Sutra</em> means
+                                &quot;thread&quot; — the fundamental connector of ideas.
+                                Just as threads weave into rope and ropes bind bridges together,
+                                your conversations build into knowledge.
+                                Every thought connected, every insight preserved.
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
             </main>
 
-            {/* Footer */}
-            <footer className="border-t border-white/[0.06] bg-[#121212]/50 py-6 text-center text-xs text-[#6b6560] z-10">
-                <p>&copy; {new Date().getFullYear()} Sutra AI. All rights reserved.</p>
+            {/* Footer with wood plank */}
+            <footer className="z-10">
+                <div className="wood-plank-divider" />
+                <div className="py-6 text-center">
+                    <p className="text-xs text-muted-foreground">
+                        &copy; {new Date().getFullYear()} Sutra AI · A thread connecting ideas
+                    </p>
+                </div>
             </footer>
         </div>
     );

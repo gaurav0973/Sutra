@@ -44,6 +44,27 @@ export default function ChatClient({
         setMessages(initialMessages);
     }, [activeConversationId, initialMessages]);
 
+    const handleDeleteConversation = useCallback(
+        async (convId: string) => {
+            try {
+                const res = await fetch(`/api/conversations/${convId}`, {
+                    method: "DELETE",
+                });
+                if (res.ok) {
+                    setConversations((prev) => prev.filter((c) => c.id !== convId));
+                    if (activeConvId === convId) {
+                        setActiveConvId(null);
+                        setMessages([]);
+                        router.push(`/chat/${userId}`);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to delete conversation:", err);
+            }
+        },
+        [activeConvId, router, userId]
+    );
+
     const sendMessage = useCallback(async () => {
         if (!input.trim() || isStreaming) return;
 
@@ -173,27 +194,9 @@ export default function ChatClient({
         }
     }, [input, isStreaming, activeConvId, userId]);
 
-    const handleDeleteConversation = useCallback(async (id: string) => {
-        try {
-            const res = await fetch(`/api/conversations/${id}`, {
-                method: "DELETE",
-            });
-            if (res.ok) {
-                setConversations((prev) => prev.filter((c) => c.id !== id));
-                if (activeConvId === id) {
-                    router.push(`/chat/${userId}`);
-                }
-            } else {
-                console.error("Failed to delete conversation");
-            }
-        } catch (error) {
-            console.error("Delete error:", error);
-        }
-    }, [activeConvId, userId, router]);
-
     return (
         <div className="flex h-screen w-screen overflow-hidden">
-            {/* Sidebar */}
+            {/* Conversation History Sidebar */}
             <Sidebar
                 conversations={conversations}
                 activeConversationId={activeConvId}
@@ -209,6 +212,7 @@ export default function ChatClient({
                     onInputChange={setInput}
                     onSend={sendMessage}
                     isStreaming={isStreaming}
+                    userId={userId}
                 />
             </div>
         </div>

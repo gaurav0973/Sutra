@@ -18,7 +18,12 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
 
     return (
         <div className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-3xl px-4 py-8 flex flex-col gap-6">
+            <div className="relative mx-auto flex max-w-4xl flex-col gap-5 px-4 py-8 md:px-6">
+                {/* Thread timeline line */}
+                {messages.length > 1 && (
+                    <div className="message-thread-line" />
+                )}
+
                 {messages.map((message, index) => {
                     const isLastAssistant =
                         message.role === "assistant" &&
@@ -26,17 +31,40 @@ export function MessageList({ messages, isStreaming }: MessageListProps) {
                         isStreaming;
 
                     return (
-                        <MessageBubble
+                        <div
                             key={index}
-                            message={message}
-                            isStreaming={isLastAssistant}
-                        />
+                            className="message-enter relative"
+                            style={{
+                                animationDelay: `${Math.min(index * 30, 180)}ms`,
+                                paddingLeft: messages.length > 1 ? "40px" : undefined,
+                            }}
+                        >
+                            {/* Thread knot */}
+                            {messages.length > 1 && (
+                                <div
+                                    className={`message-thread-knot ${message.role === "user" ? "user" : ""}`}
+                                />
+                            )}
+
+                            <MessageBubble
+                                message={message}
+                                isStreaming={isLastAssistant}
+                            />
+                        </div>
                     );
                 })}
 
                 {isStreaming &&
                     messages[messages.length - 1]?.role !== "assistant" && (
-                        <div className="flex justify-start">
+                        <div
+                            className="flex justify-start relative"
+                            style={{
+                                paddingLeft: messages.length > 1 ? "40px" : undefined,
+                            }}
+                        >
+                            {messages.length > 1 && (
+                                <div className="message-thread-knot" />
+                            )}
                             <StreamingIndicator />
                         </div>
                     )}

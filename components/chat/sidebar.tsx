@@ -1,20 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { UserButton } from "@clerk/nextjs";
 import {
+    MessageCircle,
     PanelLeft,
     Plus,
-    Globe,
-    FolderOpen,
-    GitFork,
-    Sparkles,
-    BookOpen,
-    MessageCircle,
     Trash2,
 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useState } from "react";
 
 interface Conversation {
     id: string;
@@ -37,16 +32,22 @@ export function Sidebar({
     onDeleteConversation,
     userId,
 }: SidebarProps) {
-    const [isOpen, setIsOpen] = useState(true); // Default open for better discoverability
+    const [isOpen, setIsOpen] = useState(true);
 
     return (
-        <div className="flex h-full shrink-0 z-30">
-            {/* Narrow Bar (52px) */}
-            <aside className="flex flex-col items-center w-[52px] bg-[#212121] border-r border-white/[0.06] py-3 gap-1 shrink-0">
-                {/* Top section */}
-                <div className="flex flex-col items-center gap-1">
+        <div className="z-30 flex h-full shrink-0">
+            {/* Icon rail with vertical rope line */}
+            <aside className="relative flex w-14 shrink-0 flex-col items-center gap-2 border-r border-sidebar-border bg-sidebar/95 py-3 backdrop-blur-xl">
+                {/* Vertical rope line */}
+                <div className="sidebar-rope-line" />
+
+                {/* Top actions */}
+                <div className="relative z-10 flex flex-col items-center gap-1">
                     <button
-                        className={cn("sidebar-icon-btn", isOpen && "bg-white/[0.06] text-[#e8e4df]")}
+                        className={cn(
+                            "sidebar-icon-btn",
+                            isOpen && "bg-sidebar-accent text-foreground",
+                        )}
                         onClick={() => setIsOpen(!isOpen)}
                         title="Toggle history drawer"
                     >
@@ -54,106 +55,106 @@ export function Sidebar({
                     </button>
 
                     {userId ? (
-                        <Link href={`/chat/${userId}`} className="sidebar-icon-btn" title="New chat">
+                        <Link
+                            href={`/chat/${userId}`}
+                            className="sidebar-icon-btn"
+                            title="New thread"
+                        >
                             <Plus size={18} />
                         </Link>
                     ) : (
-                        <button className="sidebar-icon-btn" title="New chat">
+                        <button className="sidebar-icon-btn" title="New thread">
                             <Plus size={18} />
                         </button>
                     )}
                 </div>
 
-                {/* Middle nav section */}
-                <div className="flex flex-col items-center gap-1 mt-4">
-                    <button className="sidebar-icon-btn" title="Search">
-                        <Globe size={18} />
-                    </button>
-
-                    <button className="sidebar-icon-btn" title="Projects">
-                        <FolderOpen size={18} />
-                    </button>
-
-                    <button className="sidebar-icon-btn" title="Branches">
-                        <GitFork size={18} />
-                    </button>
-
-                    <button className="sidebar-icon-btn" title="Starred">
-                        <Sparkles size={18} />
-                    </button>
-
-                    <button className="sidebar-icon-btn" title="Library">
-                        <BookOpen size={18} />
-                    </button>
-                </div>
-
-                {/* Spacer */}
                 <div className="flex-1" />
 
-                {/* Bottom section */}
-                <div className="flex flex-col items-center gap-1">
+                {/* Bottom actions */}
+                <div className="relative z-10 flex flex-col items-center gap-2">
                     <button
-                        className={cn("sidebar-icon-btn", isOpen && "bg-white/[0.06] text-[#e8e4df]")}
+                        className={cn(
+                            "sidebar-icon-btn",
+                            isOpen && "bg-sidebar-accent text-foreground",
+                        )}
                         onClick={() => setIsOpen(!isOpen)}
                         title="Chat history"
                     >
                         <MessageCircle size={18} />
                     </button>
 
-                    {/* User avatar */}
-                    <div className="w-8 h-8 flex items-center justify-center mt-1">
+                    <div className="mt-1 flex h-8 w-8 items-center justify-center">
                         <UserButton
                             appearance={{
                                 elements: {
-                                    avatarBox: "w-8 h-8 rounded-full border border-white/[0.08]"
-                                }
+                                    avatarBox:
+                                        "h-8 w-8 rounded-full border border-border",
+                                },
                             }}
                         />
                     </div>
                 </div>
             </aside>
 
-            {/* Expanded History Panel (240px) */}
+            {/* History drawer — parchment styled */}
             <div
                 className={cn(
-                    "h-full bg-[#1c1c1c] border-r border-white/[0.06] flex flex-col transition-all duration-200 ease-in-out overflow-hidden",
-                    isOpen ? "w-60 opacity-100" : "w-0 opacity-0 border-r-0"
+                    "h-full overflow-hidden border-r border-sidebar-border bg-sidebar/90 backdrop-blur-xl transition-all duration-250 ease-in-out",
+                    isOpen ? "w-68 opacity-100" : "w-0 border-r-0 opacity-0",
                 )}
             >
-                {/* Panel Header */}
-                <div className="p-3 border-b border-white/[0.06] flex items-center justify-between shrink-0">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#9a9590]">History</span>
+                {/* Drawer header with rope divider */}
+                <div className="flex shrink-0 items-center justify-between border-b border-sidebar-border px-4 py-3">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs" style={{ color: "var(--rope-tan)" }}>⚬</span>
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                            Threads
+                        </span>
+                    </div>
                     {userId && (
                         <Link
                             href={`/chat/${userId}`}
-                            className="sidebar-icon-btn h-7 w-7 rounded-md"
-                            title="New chat"
+                            className="sidebar-icon-btn h-7 w-7"
+                            title="New thread"
                         >
-                            <Plus size={16} />
+                            <Plus size={14} />
                         </Link>
                     )}
                 </div>
 
-                {/* Conversations List */}
-                <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+                {/* Conversation list */}
+                <div className="flex-1 space-y-1 overflow-y-auto p-2">
                     {conversations.length === 0 ? (
-                        <div className="text-xs text-[#6b6560] text-center mt-8 px-4 py-2 italic">
-                            No chat history
+                        <div className="mt-8 flex flex-col items-center gap-3 px-4 py-6 text-center">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-border">
+                                <MessageCircle size={16} className="text-muted-foreground" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-medium text-muted-foreground">No threads yet</p>
+                                <p className="mt-1 text-[10px] text-muted-foreground/60">
+                                    Start a conversation to weave your first thread
+                                </p>
+                            </div>
                         </div>
                     ) : (
                         conversations.map((conv) => (
                             <div
                                 key={conv.id}
                                 className={cn(
-                                    "group flex items-center justify-between px-3 py-1.5 rounded-md text-sm transition-all cursor-pointer",
+                                    "group flex cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 text-sm transition-all duration-180",
                                     conv.id === activeConversationId
-                                        ? "bg-white/[0.06] text-[#e8e4df]"
-                                        : "text-[#9a9590] hover:bg-white/[0.02] hover:text-[#e8e4df]"
+                                        ? "text-foreground border"
+                                        : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent",
                                 )}
+                                style={conv.id === activeConversationId ? {
+                                    background: "var(--knot-glow)",
+                                    borderColor: "color-mix(in oklab, var(--rope-tan) 25%, transparent)",
+                                } : undefined}
                             >
                                 <Link
                                     href={`/chat/${userId}?c=${conv.id}`}
-                                    className="flex-1 truncate text-left select-none pr-1 py-0.5"
+                                    className="flex-1 select-none truncate py-0.5 pr-1 text-left text-[13px]"
                                 >
                                     {conv.title}
                                 </Link>
@@ -165,8 +166,8 @@ export function Sidebar({
                                             e.stopPropagation();
                                             await onDeleteConversation(conv.id);
                                         }}
-                                        className="opacity-0 group-hover:opacity-100 text-[#6b6560] hover:text-red-400 transition-all h-5 w-5 flex items-center justify-center rounded shrink-0 hover:bg-white/[0.04]"
-                                        title="Delete chat"
+                                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-all group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                                        title="Delete thread"
                                     >
                                         <Trash2 size={12} />
                                     </button>

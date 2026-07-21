@@ -1,7 +1,9 @@
 "use client";
 
-import { useRef, useEffect } from "react";
 import { SendHorizonal } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface ChatInputProps {
     value: string;
@@ -16,7 +18,7 @@ export function ChatInput({
     onChange,
     onSend,
     isStreaming,
-    placeholder = "How can I help you today?",
+    placeholder = "Weave a new thread...",
 }: ChatInputProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -38,8 +40,7 @@ export function ChatInput({
 
     return (
         <div className="chat-input-container">
-            {/* Text area */}
-            <div className="px-4 pt-3 pb-1">
+            <div className="px-4 pt-3 pb-1.5">
                 <textarea
                     ref={textareaRef}
                     value={value}
@@ -48,28 +49,37 @@ export function ChatInput({
                     placeholder={placeholder}
                     disabled={isStreaming}
                     rows={1}
-                    className="w-full resize-none bg-transparent text-sm text-[#e8e4df] placeholder-[#6b6560] outline-none disabled:opacity-50"
+                    className="min-h-10 w-full resize-none bg-transparent px-0.5 text-sm leading-normal text-foreground placeholder:text-muted-foreground/50 outline-none disabled:opacity-50"
                     style={{ maxHeight: "200px" }}
                 />
             </div>
 
-            {/* Bottom toolbar */}
-            <div className="flex items-center justify-end px-3 pb-2.5 pt-1 gap-2">
-                {/* Model badge */}
-                <span className="text-xs text-[#9a9590] select-none px-2 py-1 rounded-md bg-white/[0.03]">
+            <div className="flex items-center justify-between gap-2 border-t border-border/40 px-3 pb-2.5 pt-2">
+                {/* Model badge using shadcn Badge component */}
+                <Badge variant="rope" className="font-sans">
+                    <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
                     Sutra · Fast
+                </Badge>
+
+                <span className="hidden text-[11px] text-muted-foreground/50 sm:inline">
+                    Enter to send · Shift+Enter for newline
                 </span>
 
-                {/* Send button */}
-                <button
+                <Button
                     type="button"
+                    size="icon-sm"
                     onClick={onSend}
                     disabled={isStreaming || !value.trim()}
-                    className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#c4956a] hover:bg-[#d4a57a] transition-colors text-[#1a1a1a] disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="rounded-lg transition-all disabled:cursor-not-allowed disabled:opacity-30"
+                    style={{
+                        background: "linear-gradient(135deg, var(--caramel), var(--coffee))",
+                        color: "#F3E9DC",
+                        boxShadow: "0 2px 8px var(--knot-glow)",
+                    }}
                     title="Send message"
                 >
-                    <SendHorizonal size={16} />
-                </button>
+                    <SendHorizonal size={15} />
+                </Button>
             </div>
         </div>
     );
