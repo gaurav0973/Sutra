@@ -1,9 +1,4 @@
-<p align="center">
-  <img src="public/image.png" alt="Sutra AI — Agent Architecture" width="700" />
-</p>
-
 <h1 align="center">🧵 Sutra AI</h1>
-
 <p align="center">
   <em>A thread connecting ideas — AI-powered research assistant built with LangGraph agentic workflows</em>
 </p>
@@ -21,7 +16,7 @@
 
 ---
 
-## 📖 Overview
+## Introduction
 
 **Sutra** (Sanskrit for *"thread"*) is a full-stack AI research assistant that goes beyond simple chatbots. It uses a **LangGraph agentic architecture** where an AI agent can autonomously decide to invoke research tools — web search, deep research, website extraction, sitemap mapping, and website crawling — to provide grounded, real-world-accurate answers.
 
@@ -29,58 +24,26 @@ The application features **real-time token streaming**, persistent conversation 
 
 ---
 
-## ✨ Features
+## Features
 
-- **🤖 Agentic AI Architecture** — Built with LangGraph's `StateGraph`, the agent autonomously decides when to use tools vs. respond directly via conditional edges
-- **🔍 Web Research Tools** — Powered by Tavily API with 5 specialized tools:
+- **Agentic AI Architecture** — Built with LangGraph's `StateGraph`, the agent autonomously decides when to use tools vs. respond directly via conditional edges
+- **Web Research Tools** — Powered by Tavily API with 5 specialized tools:
   - **Web Search** — Search the web for recent information
   - **Deep Research** — In-depth research on any topic
   - **Website Extraction** — Extract content from a specific URL
   - **Sitemap Mapping** — Generate a sitemap of any website
   - **Website Crawling** — Crawl websites with custom instructions
-- **⚡ Real-time Streaming** — Token-by-token response streaming via NDJSON over `ReadableStream`
-- **💬 Conversation Persistence** — Full conversation history stored in PostgreSQL via Prisma ORM
-- **🔐 Authentication** — User authentication and session management with Clerk
-- **📝 Rich Markdown Rendering** — AI responses rendered with GitHub Flavored Markdown, including code blocks, tables, and more
-- **🎨 Premium Dark UI** — Handcrafted design with rope/thread aesthetics, glassmorphism, and smooth animations
-- **📱 Sidebar Navigation** — Conversation history sidebar with search, delete, and quick navigation
-
+- **Real-time Streaming** — Token-by-token response streaming via NDJSON over `ReadableStream`
+- **Conversation Persistence** — Full conversation history stored in PostgreSQL via Prisma ORM
+- **Authentication** — User authentication and session management with Clerk
+- **Rich Markdown Rendering** — AI responses rendered with GitHub Flavored Markdown, including code blocks, tables, and more
 ---
 
 ## 🏗️ Architecture
+<p align="center">
+  <img src="public/image.png" alt="Sutra AI — Agent Architecture" width="700" />
+</p>
 
-The diagram below (also available as `public/image.png`) illustrates the agentic workflow:
-
-```
-User Prompt
-     │
-     ▼
- ┌─────────┐
- │  START   │  (Node)
- └────┬─────┘
-      │ Edge
-      ▼
- ┌─────────┐       ┌─────────────────────────┐
- │  AGENT  │──────▶│    STATE (messages)     │
- └────┬─────┘       │  Everyone can access    │
-      │              └─────────────────────────┘
-      │ Conditional Edges
-      ├────────────────────────────┐
-      ▼                            ▼
- ┌─────────┐                 ┌─────────┐
- │  TOOLS  │                 │   END   │
- └────┬─────┘                 └─────────┘
-      │
-      │ Edge (loops back)
-      ▼
-   ┌──────────────────────────────────┐
-   │  • Web Search                    │
-   │  • Website Extraction            │
-   │  • Deep Research                 │
-   │  • Website Crawling              │
-   │  • Sitemap Mapping               │
-   └──────────────────────────────────┘
-```
 
 **How it works:**
 
@@ -93,24 +56,6 @@ User Prompt
 
 ---
 
-## 🛠️ Tech Stack
-
-| Layer | Technology |
-|---|---|
-| **Framework** | Next.js 16 (App Router) |
-| **Language** | TypeScript 5 |
-| **UI** | React 19, Tailwind CSS 4, Shadcn UI |
-| **Fonts** | Outfit (sans), JetBrains Mono (mono) |
-| **AI Orchestration** | LangGraph (`@langchain/langgraph`) |
-| **LLM** | OpenAI GPT-4.1-mini via `@langchain/openai` |
-| **Research Tools** | Tavily API (`@tavily/core`) |
-| **Authentication** | Clerk (`@clerk/nextjs`) |
-| **Database** | PostgreSQL |
-| **ORM** | Prisma 7 with `@prisma/adapter-pg` |
-| **Markdown** | `react-markdown` + `remark-gfm` |
-| **Package Manager** | pnpm |
-
----
 
 ## 📁 Project Structure
 
@@ -189,41 +134,9 @@ Sutra/
 ---
 
 ## 📊 Database Schema
-
-```prisma
-model User {
-    id            String         @id @default(cuid())
-    clerkId       String         @unique
-    email         String         @unique
-    name          String?
-    imageUrl      String?
-    conversations Conversation[]
-    createdAt     DateTime       @default(now())
-    updatedAt     DateTime       @updatedAt
-}
-
-model Conversation {
-    id        String    @id @default(cuid())
-    title     String
-    userId    String
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    messages  Message[]
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    @@index([userId])
-}
-
-model Message {
-    id             String       @id @default(cuid())
-    conversationId String
-    conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-    role           Role         // USER | ASSISTANT
-    content        String
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
-    @@index([conversationId])
-}
-```
+<p align="center">
+  <img src="public/DB.png" alt="Sutra AI — Agent Architecture" width="700" />
+</p>
 
 **Relationships:**
 - One **User** → Many **Conversations**
@@ -232,83 +145,7 @@ model Message {
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **Node.js** ≥ 18
-- **pnpm** (recommended package manager)
-- **PostgreSQL** database (local or hosted)
-- API keys for: **OpenAI**, **Tavily**, **Clerk**
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/gaurav0973/Sutra.git
-cd Sutra
-```
-
-### 2. Install Dependencies
-
-```bash
-pnpm install
-```
-
-### 3. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-# Database
-DATABASE_URL="postgresql://user:password@host:5432/sutra"
-
-# OpenAI
-OPENAI_API_KEY="sk-..."
-
-# Tavily (Research Tools)
-TAVILY_API_KEY="tvly-..."
-
-# Clerk (Authentication)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
-CLERK_SECRET_KEY="sk_..."
-NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
-NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/chat"
-```
-
-### 4. Set Up the Database
-
-```bash
-# Generate the Prisma client
-pnpm db:generate
-
-# Run migrations
-pnpm db:migrate
-```
-
-### 5. Start the Development Server
-
-```bash
-pnpm dev
-```
-
-The app will be available at **[http://localhost:3000](http://localhost:3000)**.
-
----
-
-## 📜 Available Scripts
-
-| Script | Command | Description |
-|---|---|---|
-| `dev` | `pnpm dev` | Start Next.js development server |
-| `build` | `pnpm build` | Create production build |
-| `start` | `pnpm start` | Start production server |
-| `lint` | `pnpm lint` | Run ESLint |
-| `db:migrate` | `pnpm db:migrate` | Run Prisma migrations |
-| `db:generate` | `pnpm db:generate` | Generate Prisma client |
-
----
-
-## 🔄 How the Streaming Works
+## How the Streaming Works
 
 1. **Client** sends a `POST /api/chat` with `{ message, conversationId? }`
 2. **Server** saves the user message to the database
@@ -318,34 +155,6 @@ The app will be available at **[http://localhost:3000](http://localhost:3000)**.
    - `{ token: "..." }` — individual streamed tokens
    - `{ done: true }` — signals end of stream
 5. **Client** reads the NDJSON stream via `ReadableStream` reader and updates the UI in real-time
-
----
-
-## 🎨 Design Philosophy
-
-The name *Sutra* means "thread" in Sanskrit. The UI reflects this with:
-
-- **Rope and thread visual motifs** — decorative rope lines, wood plank dividers
-- **Compass rose** — brand symbol representing exploration and navigation
-- **Warm, earthy color palette** — caramel, rope-tan, and deep dark backgrounds
-- **Glassmorphism** — translucent headers with `backdrop-blur`
-- **Micro-animations** — pulsing dots, orbit animations, hover transitions
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is private and proprietary.
 
 ---
 
